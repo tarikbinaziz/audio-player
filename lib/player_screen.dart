@@ -147,11 +147,39 @@ class _PlayerScreenState extends State<PlayerScreen> {
           ),
           const Spacer(
             flex: 2,
-          )
+          ),
+          ListView.builder(
+              shrinkWrap: true,
+              itemCount: assetSongList.length,
+              itemBuilder: (_, index) {
+                final song = assetSongList[index];
+                return Container(
+                  child: ListTile(
+                    leading: Text(song.tag),
+                    onTap: () {
+                      playSong(song);
+                    },
+                  ),
+                );
+              })
         ],
       ),
     );
   }
+
+  final items = [
+    AudioSource.uri(Uri.parse(
+        'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3')),
+    AudioSource.uri(Uri.parse('https://example.com/track2.mp3')),
+    AudioSource.uri(Uri.parse('https://example.com/track3.mp3')),
+  ];
+
+  final assetSongList = [
+    AudioSource.asset("assets/songs/file_example_MP3_1MG.mp3", tag: "song 1"),
+    AudioSource.asset("assets/songs/file_example_MP3_2MG.mp3", tag: "song 2"),
+    AudioSource.asset("assets/songs/sample-file-3.mp3", tag: "song 3"),
+    AudioSource.asset("assets/songs/sample-file-4.mp3", tag: "song 4"),
+  ];
 
   String musicUrl =
       'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
@@ -160,8 +188,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
   bool loaded = false;
   bool playing = false;
 
+  void playSong(AudioSource song) async {
+    try {
+      await player.setAudioSource(song);
+      await player.play();
+    } catch (e) {
+      print("Error playing song: $e");
+    }
+  }
+
   void loadAudio() async {
     await player.setUrl(musicUrl);
+
     setState(() {
       loaded = true;
     });
